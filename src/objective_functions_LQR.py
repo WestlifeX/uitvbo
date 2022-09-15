@@ -339,6 +339,7 @@ if __name__ == '__main__':
         test_params = get_params(ti)
         model = get_linearized_model(test_params, sample_time)
 
+        # 改的话就是把这边改成ILmpc就行，也就是改控制器这里
         # calculate optimal controller gain
         K = get_opt_state_controller(model, Q, R)
         og_Ks.append(K.copy())
@@ -348,7 +349,7 @@ if __name__ == '__main__':
         Ks.append(K)
         costs.append(lqr_cost)
 
-        # using initial controler
+        # using initial controller
         lqr_cost_ic = perform_simulation(model, Ks[0], ti, noise=True)
 
         costs_ic.append(lqr_cost_ic)
