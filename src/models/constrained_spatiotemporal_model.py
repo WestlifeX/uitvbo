@@ -55,11 +55,12 @@ class ConstrainedGPThroughTime(ExactGP, GPyTorchModel):
             noise_constraint=noise_constraint)
 
         # initialize model
+        # 这个是exactGP的构造继承
         super(ConstrainedGPThroughTime, self).__init__(train_x, train_y, likelihood)
 
         # track constrained dimensions
         self.constr_dims = constrained_dims
-        self.spatio_dims = train_x.shape[-1] - 1
+        self.spatio_dims = train_x.shape[-1] - 1  # -1应该减去的是时间维度
         if train_x.shape[-1] == len(constrained_dims):
             print('Temporal dimensions can not be convexified!')
 

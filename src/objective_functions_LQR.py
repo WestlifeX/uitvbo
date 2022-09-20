@@ -336,7 +336,7 @@ if __name__ == '__main__':
     costs_ic = []
     for ti in time:
         sample_time = 0.02
-        test_params = get_params(ti)
+        test_params = get_params(ti)  # 这个是时变的
         model = get_linearized_model(test_params, sample_time)
 
         # 改的话就是把这边改成ILmpc就行，也就是改控制器这里
@@ -349,7 +349,7 @@ if __name__ == '__main__':
         Ks.append(K)
         costs.append(lqr_cost)
 
-        # using initial controller
+        # using initial controller 也就是不考虑时变的控制器
         lqr_cost_ic = perform_simulation(model, Ks[0], ti, noise=True)
 
         costs_ic.append(lqr_cost_ic)

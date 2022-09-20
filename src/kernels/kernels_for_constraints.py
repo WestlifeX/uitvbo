@@ -104,6 +104,7 @@ class RBFKernelForConvexityConstraints(BaseKernelForConvexityConstraints):
         self.constrained_dims = constrained_dims  # list of dims
         self.nr_constraints = len(self.constrained_dims)
 
+    # 总之是返回一个RBF kernel
     def forward(self, x1, x2, diag=False, **params):
         x1_ = self.scale(x1)
         x2_ = self.scale(x2)

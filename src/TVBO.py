@@ -20,7 +20,7 @@ class TVBO_Base:
                  post_processing_options,
                  maximze_acq=False,
                  learn_hyper_parameters=True,
-                 verbose=True,
+                 verbose=True,  # An indicator for whether to log the results.
                  approximation_type=None,
                  approximation_factor=20,
                  dtype=torch.float,
@@ -98,6 +98,11 @@ class TVBO_Base:
 class TimeVaryingBOModel(TVBO_Base):
 
     def run_TVBO(self, n_initial_points, time_horizon, safe_name='', trial=0):
+        """
+        n_initial_points: GP初始训练集
+        time_horizon: t要走多少步，N+1, N+2, ...
+        trial: seed？
+        """
         self.time_horizon = time_horizon
         chosen_query = []
         iter_lengthscales = []
@@ -105,14 +110,16 @@ class TimeVaryingBOModel(TVBO_Base):
         min_trajectory = []
 
         print(f'Initialization')
-        train_x, train_y, t_remain = self.generate_initial_data(n_initial_points, trial)
+        # 生成n_initial_points个初始训练数据
+        train_x, train_y, t_remain = self.generate_initial_data(n_initial_points, trial)  # 这里对train_y已经做过了标准化
         current_time = t_remain[0] - 1
-        mll, model = self.initialize_model(train_x, train_y, current_time=current_time)
+        mll, model = self.initialize_model(train_x, train_y, current_time=current_time)  # mll是max likelihood
 
         # save inital set of training data / to save, rescale to original
         start_x, start_y = train_x.clone(), train_y.clone()
         observed_fx = train_y.clone()
 
+        # Fit hyperparameters of a GPyTorch model.
         if self.learn_hyper_parameters:
             fit_gpytorch_model(mll)
 
@@ -235,6 +242,7 @@ class TimeVaryingBOModel(TVBO_Base):
     def generate_initial_data(self, n_training_points, seed, start_time=0):
         inital_data = []
         for i in range(self.spatio_dimensions):
+            # x应该就是theta
             x_i = torch.linspace(self.initial_feasible_set[0, i], self.initial_feasible_set[1, i],
                                  100 + n_training_points)
 
